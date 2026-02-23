@@ -9,7 +9,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #f9f9f7;
+    --bg: #ffffff;
     --bg-intro: #ffffff;
     --ink: #1e1e1c;
     --muted: #8a8680;
@@ -63,7 +63,7 @@
     left: 0;
     right: 0;
     height: 120px;
-    background: linear-gradient(to bottom, transparent, var(--bg));
+    background: linear-gradient(to bottom, transparent, #ffffff);
     pointer-events: none;
   }
 
@@ -155,7 +155,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(247, 247, 245, 0.85);
+    background: rgba(255, 255, 255, 0.90);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--line-light);
@@ -206,6 +206,7 @@
     margin: 0 auto;
     padding: 3rem 2rem 6rem;
     position: relative;
+    background: #ffffff;
   }
 
   /* Central vertical line */
@@ -261,12 +262,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem 0 0.5rem;
+    padding: 1.2rem 0 0.3rem;
     z-index: 10;
   }
 
   .year-marker-label {
-    background: var(--bg);
+    background: #ffffff;
     font-size: 1.4rem;
     font-weight: 900;
     letter-spacing: -0.02em;
@@ -285,34 +286,48 @@
     color: var(--ui);
   }
 
-  /* ── EVENT NODES ── */
+  /* ── EVENT NODES — two-column grid layout ── */
   .events-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
     position: relative;
+    row-gap: 0.25rem;
   }
 
   .event-node {
     position: relative;
-    display: flex;
-    align-items: flex-start;
-    padding: 0.5rem 0;
+    padding: 0.35rem 0;
   }
 
-  /* Alternate sides */
-  .event-node:nth-child(odd) {
-    flex-direction: row-reverse;
+  /* Left-side card: padding pushes card away from spine */
+  .event-node[data-side="left"] {
+    padding-right: 32px;
   }
 
-  /* The clickable dot on the spine */
+  /* Right-side card: padding pushes card away from spine */
+  .event-node[data-side="right"] {
+    padding-left: 32px;
+  }
+
+  /* ── DOT on the spine ── */
   .node-dot-wrapper {
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 10;
     top: 1.2rem;
     cursor: pointer;
+  }
+
+  /* Left dot: at the right edge of the left column = spine */
+  .event-node[data-side="left"] .node-dot-wrapper {
+    left: 100%;
+    transform: translateX(-50%);
+  }
+
+  /* Right dot: at the left edge of the right column = spine */
+  .event-node[data-side="right"] .node-dot-wrapper {
+    left: 0;
+    transform: translateX(-50%);
   }
 
   .node-dot {
@@ -320,7 +335,7 @@
     height: 16px;
     border-radius: 50%;
     border: 3px solid var(--line);
-    background: var(--bg);
+    background: #ffffff;
     transition: all 0.3s ease;
     position: relative;
   }
@@ -347,9 +362,9 @@
   .event-node[data-track="sem"].open .node-dot { background: var(--sem); }
   .event-node[data-track="pros"].open .node-dot { background: var(--pros); }
 
-  /* ── CARD (collapsed = preview, open = full) ── */
+  /* ── CARD ── */
   .node-card {
-    width: calc(50% - 32px);
+    width: 100%;
     cursor: pointer;
     transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-radius: 12px;
@@ -357,42 +372,31 @@
     position: relative;
   }
 
-  .event-node:nth-child(odd) .node-card {
-    margin-right: calc(50% + 32px);
-  }
-
-  .event-node:nth-child(even) .node-card {
-    margin-left: calc(50% + 32px);
-  }
-
-  /* Connector line from card to dot */
+  /* Connector line from card edge towards spine dot */
   .node-card::before {
     content: '';
     position: absolute;
     top: 1.5rem;
     width: 20px;
     height: 2px;
+    background: var(--line);
     transition: background 0.3s ease;
   }
 
-  .event-node:nth-child(odd) .node-card::before {
+  .event-node[data-side="left"] .node-card::before {
     right: -20px;
-    background: var(--line);
+    left: auto;
   }
 
-  .event-node:nth-child(even) .node-card::before {
+  .event-node[data-side="right"] .node-card::before {
     left: -20px;
-    background: var(--line);
+    right: auto;
   }
 
-  .event-node[data-track="org"]:nth-child(odd) .node-card::before,
-  .event-node[data-track="org"]:nth-child(even) .node-card::before { background: var(--org); opacity: 0.3; }
-  .event-node[data-track="tek"]:nth-child(odd) .node-card::before,
-  .event-node[data-track="tek"]:nth-child(even) .node-card::before { background: var(--tek); opacity: 0.3; }
-  .event-node[data-track="sem"]:nth-child(odd) .node-card::before,
-  .event-node[data-track="sem"]:nth-child(even) .node-card::before { background: var(--sem); opacity: 0.3; }
-  .event-node[data-track="pros"]:nth-child(odd) .node-card::before,
-  .event-node[data-track="pros"]:nth-child(even) .node-card::before { background: var(--pros); opacity: 0.3; }
+  .event-node[data-track="org"] .node-card::before { background: var(--org); opacity: 0.3; }
+  .event-node[data-track="tek"] .node-card::before { background: var(--tek); opacity: 0.3; }
+  .event-node[data-track="sem"] .node-card::before { background: var(--sem); opacity: 0.3; }
+  .event-node[data-track="pros"] .node-card::before { background: var(--pros); opacity: 0.3; }
 
   .node-card-inner {
     padding: 1rem 1.25rem;
@@ -553,24 +557,31 @@
       padding: 0.25rem 0.9rem;
     }
 
-    .node-dot-wrapper {
+    /* Collapse grid to single column on mobile */
+    .events-row {
+      display: block;
+    }
+
+    .event-node[data-side="left"],
+    .event-node[data-side="right"] {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .event-node[data-side="left"] .node-dot-wrapper,
+    .event-node[data-side="right"] .node-dot-wrapper {
       left: 24px;
+      transform: translateX(-50%);
     }
 
-    .event-node,
-    .event-node:nth-child(odd) {
-      flex-direction: row;
-    }
-
-    .node-card,
-    .event-node:nth-child(odd) .node-card {
+    .event-node[data-side="left"] .node-card,
+    .event-node[data-side="right"] .node-card {
       width: calc(100% - 58px);
-      margin-left: 58px !important;
-      margin-right: 0 !important;
+      margin-left: 58px;
     }
 
-    .node-card::before,
-    .event-node:nth-child(odd) .node-card::before {
+    .event-node[data-side="left"] .node-card::before,
+    .event-node[data-side="right"] .node-card::before {
       left: -14px !important;
       right: auto !important;
       width: 14px;
@@ -584,10 +595,10 @@
   }
 
   @media (max-width: 480px) {
-    .node-card,
-    .event-node:nth-child(odd) .node-card {
+    .event-node[data-side="left"] .node-card,
+    .event-node[data-side="right"] .node-card {
       width: calc(100% - 48px);
-      margin-left: 48px !important;
+      margin-left: 48px;
     }
     .node-card-inner { padding: 0.8rem 1rem; }
     .card-title { font-size: 0.88rem; }
@@ -600,32 +611,12 @@
 <section class="hero">
   <img class="hero-logo" src="logo.svg" alt="30 år med buildingSMART Norge" />
 
-<<<<<<< Updated upstream
   <div class="hero-content">
     <div class="hero-tracks">
       <div class="hero-track"><div class="hero-track-dot" style="background:var(--org)"></div><span style="color:var(--org)">Organisatorisk</span></div>
       <div class="hero-track"><div class="hero-track-dot" style="background:var(--tek)"></div><span style="color:var(--tek)">Teknisk</span></div>
       <div class="hero-track"><div class="hero-track-dot" style="background:var(--sem)"></div><span style="color:var(--sem)">Semantisk</span></div>
       <div class="hero-track"><div class="hero-track-dot" style="background:var(--pros)"></div><span style="color:var(--pros)">Prosess</span></div>
-=======
-<!-- Fixed top-left logo -->
-<a id="fixed-logo-link" href="#" onclick="goToStart(); return false;">
-  <img id="fixed-logo" src="logo.svg" alt="30 år med buildingSMART Norge" />
-</a>
-
-<div id="progress-bar"></div>
-
-<!-- INTRO -->
-<div id="intro">
-  <img id="intro-logo" src="logo.svg" alt="30 år med buildingSMART Norge" />
-
-  <div id="intro-headline">
-    <div id="intro-tracks">
-      <div class="intro-track"><div class="intro-track-dot" style="background:#3679ea"></div><span style="color:#3679ea">Organisatorisk</span></div>
-      <div class="intro-track"><div class="intro-track-dot" style="background:#009ca6"></div><span style="color:#009ca6">Teknisk</span></div>
-      <div class="intro-track"><div class="intro-track-dot" style="background:#983a98"></div><span style="color:#983a98">Semantisk</span></div>
-      <div class="intro-track"><div class="intro-track-dot" style="background:#e92938"></div><span style="color:#e92938">Prosess</span></div>
->>>>>>> Stashed changes
     </div>
     <p class="hero-desc">
       Tidslinjen viser 30 år med buildingSMART og hvordan åpenBIM har utviklet seg fra de første IFC-versjonene på 1990-tallet til dagens internasjonale standarder og norske rammeverk.<br><br>
@@ -821,14 +812,22 @@ events.forEach((yearEvent) => {
   marker.innerHTML = `<div class="year-marker-label">${yearEvent.year}</div>`;
   group.appendChild(marker);
 
-  // Events row
+  // Events row — 2-column grid, cards fill both sides
   const row = document.createElement('div');
   row.className = 'events-row';
 
-  yearEvent.cards.forEach((card) => {
+  yearEvent.cards.forEach((card, index) => {
     const node = document.createElement('div');
     node.className = 'event-node';
     node.dataset.track = card.track;
+
+    // Distribute cards: even index → left, odd index → right
+    // Cards at the same index/2 share the same grid row (side by side)
+    const side = index % 2 === 0 ? 'left' : 'right';
+    const pairRow = Math.floor(index / 2) + 1;
+    node.dataset.side = side;
+    node.style.gridColumn = side === 'left' ? '1' : '2';
+    node.style.gridRow = String(pairRow);
 
     node.innerHTML = `
       <div class="node-dot-wrapper"><div class="node-dot"></div></div>
